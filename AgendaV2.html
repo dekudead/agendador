@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reserva de Agenda — Wally & Dany</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-dark:  #1b4332;
+    --green-mid:   #2d6a4f;
+    --green-light: #52b788;
+    --green-pale:  #d8f3dc;
+    --cream:       #f8f6f1;
+    --text:        #1a2e1a;
+    --muted:       #6b8f71;
+    --white:       #ffffff;
+    --radius:      16px;
+    --shadow:      0 8px 40px rgba(27,67,50,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--cream); color: var(--text);
+    min-height: 100vh;
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 40px 16px 80px;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 0%, rgba(82,183,136,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 90% 100%, rgba(45,106,79,0.12) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  .card {
+    position: relative; z-index: 1;
+    background: var(--white); border-radius: 24px;
+    box-shadow: var(--shadow); width: 100%; max-width: 620px; overflow: hidden;
+    animation: rise 0.6s cubic-bezier(.22,.68,0,1.2) both;
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .card-header {
+    background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+    padding: 40px 40px 32px; position: relative; overflow: hidden;
+  }
+  .card-header::after {
+    content: '📅'; position: absolute; right: 32px; top: 28px;
+    font-size: 4rem; opacity: 0.15;
+  }
+  .card-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; color: var(--white); margin-bottom: 8px; line-height: 1.2;
+  }
+  .card-header p {
+    color: rgba(255,255,255,0.72); font-size: 0.95rem;
+    font-weight: 300; max-width: 380px; line-height: 1.6;
+  }
+  .dots { display: flex; gap: 6px; margin-bottom: 20px; }
+  .dots span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+  .dots span:first-child { background: var(--green-light); }
+  .card-body { padding: 36px 40px 40px; }
+  .field-group { margin-bottom: 24px; animation: rise 0.5s both; }
+  .field-group:nth-child(1){animation-delay:.05s}
+  .field-group:nth-child(2){animation-delay:.10s}
+  .field-group:nth-child(3){animation-delay:.15s}
+  .field-group:nth-child(4){animation-delay:.20s}
+  .field-group:nth-child(5){animation-delay:.25s}
+  .field-group:nth-child(6){animation-delay:.30s}
+  label {
+    display: block; font-size: 0.78rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.09em;
+    color: var(--green-mid); margin-bottom: 8px;
+  }
+  label .req { color: #e07a5f; margin-left: 2px; }
+  input[type="text"], input[type="date"], select, textarea {
+    width: 100%; border: 1.5px solid #d4e8d8; border-radius: var(--radius);
+    padding: 13px 16px; font-family: 'Outfit', sans-serif;
+    font-size: 0.97rem; color: var(--text); background: #fafdf9; outline: none;
+    transition: border-color .2s, box-shadow .2s, background .2s; -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--green-light);
+    box-shadow: 0 0 0 4px rgba(82,183,136,0.15); background: var(--white);
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  .radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+  .radio-group input { display: none; }
+  .radio-group label {
+    text-transform: none; letter-spacing: 0; font-size: 0.95rem; font-weight: 500;
+    color: var(--green-mid); border: 1.5px solid #d4e8d8; border-radius: 50px;
+    padding: 10px 24px; cursor: pointer; transition: all .2s; user-select: none; background: #fafdf9;
+  }
+  .radio-group input:checked + label {
+    background: var(--green-dark); border-color: var(--green-dark); color: var(--white);
+    box-shadow: 0 4px 14px rgba(27,67,50,0.25);
+  }
+  .radio-group label:hover { border-color: var(--green-light); background: var(--green-pale); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 480px) { .grid-2 { grid-template-columns: 1fr; } }
+  .divider { border: none; border-top: 1px solid #e8f3ea; margin: 28px 0; }
+  .btn-submit {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+    color: var(--white); border: none; border-radius: var(--radius);
+    font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 600;
+    letter-spacing: 0.03em; cursor: pointer;
+    transition: transform .15s, box-shadow .2s;
+    box-shadow: 0 4px 18px rgba(27,67,50,0.3);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(27,67,50,0.35); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+    border-radius: 50%; animation: spin 0.7s linear infinite; display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast {
+    display: none; margin-top: 20px; border-radius: var(--radius);
+    padding: 16px 20px; font-weight: 500; animation: rise 0.4s both; line-height: 1.6;
+  }
+  .toast.success { display: block; background: var(--green-pale); border: 1px solid var(--green-light); color: var(--green-dark); }
+  .toast.error   { display: block; background: #fff0ed; border: 1px solid #e07a5f; color: #c0392b; }
+  .toast strong  { display: block; margin-bottom: 4px; font-size: 1rem; }
+  .error-msg { font-size: 0.8rem; color: #e07a5f; margin-top: 5px; display: none; }
+  .field-group.invalid input,
+  .field-group.invalid textarea,
+  .field-group.invalid select { border-color: #e07a5f; }
+  .field-group.invalid .error-msg { display: block; }
+  .card-footer {
+    background: #f4faf5; padding: 16px 40px;
+    border-top: 1px solid #e8f3ea; text-align: center;
+    font-size: 0.8rem; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <h1>Reserva de Agenda</h1>
+    <p>O tempo é um recurso escasso e a organização é a nossa melhor defesa. Para garantir seu lugar, preencha as informações abaixo.</p>
+  </div>
+
+  <div class="card-body">
+    <form id="reservaForm" novalidate>
+
+      <div class="field-group" id="fg-agenda">
+        <label>Agenda de quem <span class="req">*</span></label>
+        <div class="radio-group">
+          <input type="radio" name="agenda" id="r-dany" value="Dany" required/>
+          <label for="r-dany">Dany</label>
+          <input type="radio" name="agenda" id="r-wally" value="Wally"/>
+          <label for="r-wally">Wally</label>
+        </div>
+        <span class="error-msg">Selecione uma opção.</span>
+      </div>
+
+      <div class="field-group" id="fg-solicitante">
+        <label for="solicitante">Com quem? (solicitante) <span class="req">*</span></label>
+        <input type="text" id="solicitante" placeholder="Seu nome completo"/>
+        <span class="error-msg">Este campo é obrigatório.</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="field-group" id="fg-data">
+          <label for="data">Data da Reserva <span class="req">*</span></label>
+          <input type="date" id="data"/>
+          <span class="error-msg">Selecione uma data.</span>
+        </div>
+        <div class="field-group">
+          <label for="duracao">Duração prevista</label>
+          <select id="duracao">
+            <option value="">Selecione...</option>
+            <option>15 minutos</option>
+            <option>30 minutos</option>
+            <option>45 minutos</option>
+            <option>1 hora</option>
+            <option>1h30</option>
+            <option>2 horas</option>
+            <option>2h30</option>
+            <option>3 horas</option>
+            <option>Dia Inteiro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group" id="fg-assunto">
+        <label for="assunto">Assunto / Motivo <span class="req">*</span></label>
+        <input type="text" id="assunto" placeholder="Breve descrição do motivo"/>
+        <span class="error-msg">Este campo é obrigatório.</span>
+      </div>
+
+      <div class="field-group">
+        <label for="local">Localização</label>
+        <textarea id="local" placeholder="Endereço, link de videochamada, sala..."></textarea>
+      </div>
+
+      <hr class="divider"/>
+
+      <button type="submit" class="btn-submit" id="btnSubmit">
+        <div class="spinner" id="spinner"></div>
+        <span id="btnText">✅ Confirmar Reserva</span>
+      </button>
+
+      <div class="toast" id="toast"></div>
+    </form>
+  </div>
+  <div class="card-footer">Desenvolvido para Wally &amp; Dany • 2026</div>
+</div>
+
+<script>
+  // ⚠️ TROQUE pela URL do ngrok — ex: "https://abc123.ngrok-free.app/reserva"
+  const SERVER_URL = "https://literately-froglike-minta.ngrok-free.dev/reserva";
+
+  const dataInput = document.getElementById('data');
+  const today = new Date().toISOString().split('T')[0];
+  dataInput.min = today;
+  dataInput.value = today;
+
+  const form    = document.getElementById('reservaForm');
+  const toast   = document.getElementById('toast');
+  const btn     = document.getElementById('btnSubmit');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('btnText');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    let valid = true;
+
+    const agenda   = document.querySelector('input[name="agenda"]:checked');
+    const fgAgenda = document.getElementById('fg-agenda');
+    if (!agenda) { fgAgenda.classList.add('invalid'); valid = false; }
+    else fgAgenda.classList.remove('invalid');
+
+    const solicitante = document.getElementById('solicitante');
+    const fgSol       = document.getElementById('fg-solicitante');
+    if (!solicitante.value.trim()) { fgSol.classList.add('invalid'); valid = false; }
+    else fgSol.classList.remove('invalid');
+
+    const data   = document.getElementById('data');
+    const fgData = document.getElementById('fg-data');
+    if (!data.value) { fgData.classList.add('invalid'); valid = false; }
+    else fgData.classList.remove('invalid');
+
+    const assunto   = document.getElementById('assunto');
+    const fgAssunto = document.getElementById('fg-assunto');
+    if (!assunto.value.trim()) { fgAssunto.classList.add('invalid'); valid = false; }
+    else fgAssunto.classList.remove('invalid');
+
+    if (!valid) return;
+
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.textContent = 'Enviando...';
+    toast.className = 'toast';
+
+    const [y, m, d] = data.value.split('-');
+    const dataFormatada = `${d}/${m}/${y}`;
+
+    const payload = {
+      agenda:      agenda.value,
+      solicitante: solicitante.value.trim(),
+      data:        dataFormatada,
+      duracao:     document.getElementById('duracao').value || '—',
+      assunto:     assunto.value.trim(),
+      local:       document.getElementById('local').value.trim() || '—'
+    };
+
+    try {
+      const res  = await fetch(SERVER_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+
+      if (json.ok) {
+        toast.className = 'toast success';
+        toast.innerHTML = `
+          <strong>✅ Reserva confirmada!</strong>
+          <b>${payload.agenda}</b> — ${dataFormatada} — ${payload.duracao}<br>
+          <small>Dados salvos na planilha com sucesso.</small>
+        `;
+        form.reset();
+        dataInput.value = today;
+      } else {
+        throw new Error(json.erro || 'Erro desconhecido');
+      }
+    } catch (err) {
+      toast.className = 'toast error';
+      toast.innerHTML = `
+        <strong>❌ Não foi possível enviar.</strong>
+        Verifique se o servidor e o ngrok estão rodando.<br>
+        <small>${err.message}</small>
+      `;
+    } finally {
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      btnText.textContent = '✅ Confirmar Reserva';
+    }
+  });
+</script>
+</body>
+</html>
